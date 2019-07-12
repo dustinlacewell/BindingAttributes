@@ -1,4 +1,4 @@
 #!/run/current-system/sw/bin/env bash
 
 mono .paket/paket.exe install
-dotnet build -o .
+dotnet build -o nupkg
