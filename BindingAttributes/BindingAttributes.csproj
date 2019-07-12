@@ -8,7 +8,7 @@
     <PackageProjectUrl>https://github.com/dustinlacewell/BindingAttributes</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dustinlacewell/BindingAttributes.git</RepositoryUrl>
     <PackageTags>DependencyInjection Attributes</PackageTags>
-    <PackageVersion>0.1.0-preview1</PackageVersion>
+    <PackageVersion>0.1.0</PackageVersion>
     <Title>BindingAttributes</Title>
   </PropertyGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />

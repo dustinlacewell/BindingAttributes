@@ -2,7 +2,7 @@
 <package>
     <metadata>
         <id>BindingAttribute</id>
-        <version>0.1.0-preview1</version>
+        <version>0.1.0</version>
         <title>BindingAttribute</title>
         <authors>Dustin Lacewell</authors>
         <owners>Dustin Lacewell</owners>
@@ -16,8 +16,8 @@
         <copyright>Copyright 2019</copyright>
         <language>en-US</language>
         <dependencies>
-            <dependency id="Microsoft.Extensions.DependencyInjection" version="3.0.0-preview6.19304.6"/>
+            <dependency id="Microsoft.Extensions.DependencyInjection" version="2.2.0"/>
         </dependencies>
-        <releaseNotes>Preview Release 1</releaseNotes>
+        <releaseNotes>Release 0.1.0</releaseNotes>
     </metadata>
 </package>
