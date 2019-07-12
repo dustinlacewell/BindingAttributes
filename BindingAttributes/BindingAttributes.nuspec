@@ -20,7 +20,4 @@
         </dependencies>
         <releaseNotes>Release 0.1.0</releaseNotes>
     </metadata>
-    <files>
-      <file src="lib\**" target="\lib" />
-    </files>
 </package>
