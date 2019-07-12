@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package>
+    <metadata>
+        <id>$id$</id>
+        <version>$packageVersion$</version>
+        <title>$title$</title>
+        <authors>$authors$</authors>
+        <owners>$authors$</owners>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>$description$</description>
+        <summary>$description$</summary>
+        <projectUrl>$packageProjectUrl$</projectUrl>
+        <repository url="$repositoryUrl$"/>
+        <license type="expression">MIT</license>
+        <copyright>Copyright 2019</copyright>
+        <language>en-US</language>
+        <tags>$packageTags$</tags>
+        <dependencies>
+            <dependency id="Microsoft.Extensions.DependencyInjection" version="3.0.0-preview6.19304.6"/>
+        </dependencies>
+        <releaseNotes>Initial Release</releaseNotes>
+    </metadata>
+</package>
