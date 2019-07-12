@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 <package>
     <metadata>
-        <id>$id$</id>
-        <version>$packageVersion$</version>
-        <title>$title$</title>
-        <authors>$authors$</authors>
-        <owners>$authors$</owners>
+        <id>BindingAttribute</id>
+        <version>0.1.0-preview1</version>
+        <title>BindingAttribute</title>
+        <authors>Dustin Lacewell</authors>
+        <owners>Dustin Lacewell</owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>$description$</description>
-        <summary>$description$</summary>
-        <projectUrl>$packageProjectUrl$</projectUrl>
-        <repository url="$repositoryUrl$"/>
+        <description>Attributes for binding types in the Microsoft.Extensions.Dependency container</description>
+        <summary>Attributes for binding types in the Microsoft.Extensions.Dependency container</summary>
+        <projectUrl>https://github.com/dustinlacewell/BindingAttributes</projectUrl>
+        <repository
+            url="https://github.com/dustinlacewell/BindingAttributes.git" />
         <license type="expression">MIT</license>
         <copyright>Copyright 2019</copyright>
         <language>en-US</language>
-        <tags>$packageTags$</tags>
         <dependencies>
             <dependency id="Microsoft.Extensions.DependencyInjection" version="3.0.0-preview6.19304.6"/>
         </dependencies>
-        <releaseNotes>Initial Release</releaseNotes>
+        <releaseNotes>Preview Release 1</releaseNotes>
     </metadata>
 </package>
