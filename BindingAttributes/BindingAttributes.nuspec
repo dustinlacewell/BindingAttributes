@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <package>
     <metadata>
-        <id>BindingAttribute</id>
+        <id>BindingAttributes</id>
         <version>0.1.0</version>
-        <title>BindingAttribute</title>
+        <title>BindingAttributes</title>
         <authors>Dustin Lacewell</authors>
         <owners>Dustin Lacewell</owners>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
