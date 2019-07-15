@@ -9,15 +9,6 @@ namespace BindingAttributes {
 
     using Binder = Action<IServiceCollection>;
 
-
-    public enum BindType {
-
-        Singleton,
-        Transient,
-        Scoped
-
-    }
-
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
     public class BindingAttribute : Attribute {
 
