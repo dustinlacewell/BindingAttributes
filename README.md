@@ -2,6 +2,8 @@
 
 This library implements a number of helpful attributes for use with the `Microsoft.Extensions.DependencyInjection` container.
 
+A short guide: [Bindings and Factories](https://github.com/dustinlacewell/BindingAttributes#bindings-and-factories)
+
 ## Installation
 
 There is no Nuget package available yet.
@@ -35,62 +37,81 @@ By default the binding scopes are Singleton. Specify a particular scope by passi
 ### Class Attributes
 
 **[Binding]**
+
 Bind the annotated type to itself with singleton lifetime.
 
 **[Binding(** *Type* serviceType **)]**
+
 Bind the annotated type to `serviceType` with singleton lifetime.
 
 **[Binding(** *BindType* bindType **)]**
+
 Bind the annotated type to itself with `bindType` lifetime.
 
 **[Binding(** *Type* serviceType, *BindType* bindType **)]**
+
 Bind the annotated type to `serviceType` with `bindType` lifetime.
 
 **[AsTransient]**
+
 Bind the annotated type to itself with transient lifetime.
 
 **[AsTransient(** *Type* serviceType **)]**
+
 Bind the annotated type to `serviceType` with transient lifetime.
 
 **[AsScoped]**
+
 Bind the annotated type to itself with scoped lifetime.
 
 **[AsScoped(** *Type* serviceType **)]**
+
 Bind the annotated type to `serviceType` with scoped lifetime.
 
 **[AsSingleton]**
+
 Bind the annotated type to itself with singleton lifetime.
 
 **[AsSingleton(** *Type* serviceType **)]**
+
 Bind the annotated type to `serviceType` with singleton lifetime.
 
 ### Method Attributes
 
 **[Binding]**
+
 Bind the annotated method as a factory closure to its return type with singleton lifetime.
 
 **[Binding(** *Type* serviceType **)]**
+
 Bind the annotated method as a factory closure to `serviceType` with singleton lifetime.
 
 **[Binding(** *BindType* bindType **)]**
+
 Bind the annotated method as a factory closure to its return type with `bindType` lifetime.
 
 **[Binding(** *Type* serviceType, *BindType* bindType **)]**
+
 Bind the annotated method as a factory closure to `serviceType` with `bindType` lifetime.
 
 **[Factory]**
+
 Bind the annotated method as a factory delegate to the delegate's return value with singleton lifetime.
 
 **[Factory(** *BindType* bindType **)]**
+
 Bind the annotated method as a factory delegate to the delegate's return value with `bindType` lifetime.
 
 **[TransientFactory]**
+
 Bind the annotated method, as a factory delegate, to the delegate's return value with transient lifetime.
 
 **[ScopedFactory]**
+
 Bind the annotated method, as a factory delegate, to the delegate's return value with scoped lifetime.
 
 **[SingletonFactory]**
+
 Bind the annotated method, as a factory delegate, to the delegate's return value with singleton lifetime.
 
 # Bindings and Factories
