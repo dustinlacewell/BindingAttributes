@@ -10,27 +10,42 @@ namespace BindingAttributes {
     [AttributeUsage(AttributeTargets.Method, Inherited = false)]
     public class FactoryAttribute : Attribute {
 
-        protected static MethodInfo binder;
+        private static MethodInfo _asSingleton;
+        private static MethodInfo _asScoped;
+        private static MethodInfo _asTransient;
+
+        private BindType _bindType;
 
         static FactoryAttribute() {
-            binder = FindBinder();
+            _asSingleton = BinderFinder.Find(BinderMethod.Singleton);
+            _asScoped = BinderFinder.Find(BinderMethod.Scoped);
+            _asTransient = BinderFinder.Find(BinderMethod.Transient);
         }
 
-        protected static MethodInfo FindBinder() {
-            const BindingFlags flags = BindingFlags.Public | BindingFlags.Static;
-            var searchType = typeof(ServiceCollectionServiceExtensions);
-            var methods = searchType.GetMethods(flags);
-
-            return (from m in methods
-                    where m.Name == "AddSingleton" &&
-                          m.GetGenericArguments().Length == 1 &&
-                          m.GetParameters().Length == 2 &&
-                          m.GetGenericArguments()[0] != m.GetParameters()[1].ParameterType
-                    select m).Single();
+        public FactoryAttribute() {
+            _bindType = BindType.Transient;
         }
 
-        public void Bind(IServiceCollection services, MethodInfo target) {
-            var closedBinder = binder.MakeGenericMethod(target.ReturnType);
+        public FactoryAttribute(BindType bindType) {
+            _bindType = bindType;
+        }
+
+        private MethodInfo GetBinder() {
+            switch (_bindType) {
+                case BindType.Scoped:
+                    return _asScoped;
+
+                case BindType.Singleton:
+                    return _asSingleton;
+
+                default:
+                    return _asTransient;
+            }
+        }
+
+        private void Bind(IServiceCollection services, MethodInfo target) {
+            var openBinder = GetBinder();            
+            var closedBinder = openBinder.MakeGenericMethod(target.ReturnType);
             var targetDelegate = Delegate.CreateDelegate(closedBinder.GetParameters()[1].ParameterType, target);
             closedBinder.Invoke(null, new object[] {services, targetDelegate});
         }
