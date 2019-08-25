@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -50,8 +52,9 @@ namespace BindingAttributes {
             closedBinder.Invoke(null, new object[] {services, targetDelegate});
         }
 
-        public static void ConfigureFactories(IServiceCollection services) {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+        public static void ConfigureFactories(IServiceCollection services, IEnumerable<Assembly> assemblies=null) {
+            if (assemblies == null) assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies) {
                 foreach (var type in assembly.GetTypes()) {
                     foreach (var method in type.GetRuntimeMethods()) {
                         if (!method.IsStatic) {

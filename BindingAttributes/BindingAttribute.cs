@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -83,8 +85,9 @@ namespace BindingAttributes {
             }
         }
 
-        public static void ConfigureBindings(IServiceCollection services) {
-            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+        public static void ConfigureBindings(IServiceCollection services, IEnumerable<Assembly> assemblies) {
+            if (assemblies == null) assemblies = AppDomain.CurrentDomain.GetAssemblies();
+            foreach (var assembly in assemblies) {
                 foreach (var implementationType in assembly.GetTypes()) {
                     var classAttrs = implementationType.GetCustomAttributes(typeof(BindingAttribute));
 
