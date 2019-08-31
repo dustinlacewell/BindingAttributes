@@ -3,4 +3,7 @@ packages/
 paket-files/
 **/obj/
 **/bin/
+**/nuget/
+**/nupkg/
+**/publish/
 
