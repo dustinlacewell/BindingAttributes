@@ -24,6 +24,18 @@ Finally update your packages:
 
     paket install
 
+
+# Feature Activation
+
+For any of the attributes within this package to work, you must configure your `IServiceCollection` appropriately:
+
+```cs
+BindingAttribute.ConfigureBindings(services);
+FactoryAttribute.ConfigureFactories(services);
+OptionsAttribute.ConfigureOptions(services, configuration);
+```
+
+
 ## Attribute Overview
 
 ### BindTypes
@@ -31,8 +43,7 @@ Finally update your packages:
 By default the binding scopes are Singleton. Specify a particular scope by passing a `BindType` enumeration:
 
 - *BindType*.**Transient**
-- *BindType*.**Scoped**
-- *BindType*.**Singleton**
+- *BindType*.**Scoped** *BindType*.**Singleton**
 
 ### Class Attributes
 
@@ -75,6 +86,14 @@ Bind the annotated type to itself with singleton lifetime.
 **[AsSingleton(** *Type* serviceType **)]**
 
 Bind the annotated type to `serviceType` with singleton lifetime.
+
+**[Options]**
+
+Bind the annotated type as `T` in `IOptions<T>` against the `IConfigurationRoot`.
+
+**[Options(** *string* subSectionName **)]**
+
+Bind the annotated type as `T` in `IOptions<T>` against the named `IConfiguration` subsection.
 
 ### Method Attributes
 
@@ -319,3 +338,56 @@ Now dependants can depend on the delegate:
 In addition to `[Factory]`, the `[SingletonFactory]`, `[ScopedFactory]` and `[TransientFactory]` attributes all do the obvious thing.
 
 
+# Options
+
+Wouldn't it be great if you could automatically have specific configuration data automatically injected into classes? By combining `Microsoft.Extensions.Configuration` and `Microsoft.Extensions.Options` exactly that can be done.
+
+An in-depth walkthrough of the Options Pattern won't be provided here, but it can be read about in the aspnet core documentation:
+
+https://docs.microsoft.com/en-us/aspnet/core/fundamentals/configuration/options?view=aspnetcore-2.2
+
+## [Options] Attribute
+
+The `[Options]` attribute allows you to bind a concrete class to the `IOptions<T>` interface.
+
+```cs
+[Options]
+public class FooOptions { 
+    public string Bar { get; }
+}
+```
+
+When `IOptions<FooOptions>` is injected, it will be initialized by your application's `IConfigurationRoot`:
+
+```cs
+[Binding]
+public class FooService {
+
+    public FooService(IOptions<FooOptions> options) {
+        Console.WriteLine($"FooService option Bar = {_options.Value.Bar}");
+    }
+}
+```
+
+The alternative form `[Options("Foo")]` will be initialized by the `Foo` subsection of your application's `IConfigurationRoot`:
+
+```cs
+[Options("Foo")]
+public class FooOptions { 
+    public string Bar { get; }
+}
+```
+
+If you were using configuration from the environment, you'd need an environment variable named "Foo__Bar" to specify the value. If you were using JSON you'd need a `{"Foo": {"Bar": 42}}` like structure, and so on.
+
+Any configuration sub-section depth can be achieved by separating levels of the configuration with a `:` colon:
+
+
+```cs
+[Options("Foo:Auth")]
+public class FooOptions { 
+    public string Token { get; }
+}
+```
+
+Now you'd need an environment variable `Foo__Auth__Token` for example.
