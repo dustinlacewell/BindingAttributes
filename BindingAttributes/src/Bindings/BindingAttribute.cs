@@ -86,6 +86,7 @@ namespace BindingAttributes {
         }
 
         public static void ConfigureBindings(IServiceCollection services, IEnumerable<Assembly> assemblies=null) {
+            
             if (assemblies == null) assemblies = AppDomain.CurrentDomain.GetAssemblies();
             foreach (var assembly in assemblies) {
                 foreach (var implementationType in assembly.GetTypes()) {
