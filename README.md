@@ -391,3 +391,17 @@ public class FooOptions {
 ```
 
 Now you'd need an environment variable `Foo__Auth__Token` for example.
+
+## Options Validation
+
+By utilizing attributes from the `System.ComponentModel.DataAnnotations` package you can also apply validation to option fields:
+
+```cs
+[Options("Foo:Auth")]
+public class FooOptions { 
+    [Required]
+    public string Token { get; }
+}
+```
+
+Any `OptionsValidationErrors` will be thrown the first time the `IOptions<FooOptions>` instance is requested and constructed.
