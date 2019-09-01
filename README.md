@@ -169,11 +169,15 @@ The way you tell the container how to do this is by "binding" the desired types 
 
 Once the container knows how to produce instances, your code can request them. If your code _depended_ on using an instance of `Foo`, it could ask the container for one:
 
-    var foo = sp.GetService<Foo>();
+```cs
+var foo = sp.GetService<Foo>();
+```
 
 Similarly, if your code depended on having an instance of `IUseful` but didn't care which implementation is used, it can again ask the container:
 
-    var useful = sp.GetService<IUseful>()
+```cs
+var useful = sp.GetService<IUseful>()
+```
 
 In this case, the container would create an instance of `Foo` since we told it to bind `IUseful` to `Foo`.
 
@@ -193,10 +197,12 @@ However, what if the container can't provide all of the constructor parameters f
 
 Imagine `Foo` takes an `ILogger` and an `int` which configures the type somehow. We can assume the `ILogger` interface is bound usefully. However, instead of binding `int` in the container, we can instead bind `Foo` to a factory closure, which is just a simple lambda:
 
-    di.AsSingleton<Foo>(sp => { 
-        var logger = sp.GetService<ILogger>();
-        return new Foo(logger, randomNumber());
-    });
+```cs
+di.AsSingleton<Foo>(sp => { 
+    var logger = sp.GetService<ILogger>();
+    return new Foo(logger, randomNumber());
+});
+```
 
 When the container must produce an instance of `Foo` it will call this closure. The closure uses the container to resolve the `ILogger` dependency. But we're telling it how to provide the `int` dependency. 
 
@@ -212,11 +218,12 @@ Binding a type or interface in the container is done via some method which also 
 
 In the above example, by changing the lifetime to transient, a new random number is produced each time an instance of `Foo` is provided:
 
-
-    di.AsTransient<Foo>(sp => { 
-        var logger = sp.GetService<ILogger>();
-        return new Foo(logger, randomNumber());
-    });
+```cs
+di.AsTransient<Foo>(sp => { 
+    var logger = sp.GetService<ILogger>();
+    return new Foo(logger, randomNumber());
+});
+```
 
 ### Factory Delegates
 
@@ -234,61 +241,74 @@ Imagine that `Foo` depends on `ILogger` and `Stream`. The container can satisfy 
 
 If we have a `Stream` and need a `Foo`, instead of binding `Foo` directly, we can instead bind a delegate `Func<Stream, Foo>`. We'll bind it as as singleton since we don't need multiple copies of the same function:
 
-    di.AsSingleton<Func<Stream, Foo>>(sp => {
-        var logger = sp.GetService<ILogger>();
-        return stream => new Foo(logger, stream);
-    });
+```cs
+di.AsSingleton<Func<Stream, Foo>>(sp => {
+    var logger = sp.GetService<ILogger>();
+    return stream => new Foo(logger, stream);
+});
+```
 
 The factory delegate is just the function returned from the factory closure. The logger is captured from the parent factory closure, and the stream is provided via the parameter:
 
-    stream => new Foo(logger, stream);    
+```cs
+stream => new Foo(logger, stream);    
+```
 
 By binding the delegate type to a factory closure which returns our `Foo`-making factory delegate we can now use the container to get an instance of our factory delegate:
 
-    var fooFactory = sp.GetService<Func<Stream, Foo>>();
-    var foo = fooFactory(someStream);
+```cs
+var fooFactory = sp.GetService<Func<Stream, Foo>>();
+var foo = fooFactory(someStream);
+```
 
 Of course, if the type that owns this code is itself having its dependencies injected by the container, it can just specify the factory delegate as a dependency:
+```cs
+public class Bar {
+    Func<Stream, Foo> fooFactory;
 
-    public class Bar {
-        Func<Stream, Foo> fooFactory;
-
-        public Bar(Func<Stream, Foo> fooFactory) {
-            this.fooFactory = fooFactory;
-        }
+    public Bar(Func<Stream, Foo> fooFactory) {
+        this.fooFactory = fooFactory;
     }
-
+}
+```
 Now it doesn't need to interact with the container directly by calling `GetService` on it.
 
 ## [Binding] Attribute
 
 The `[Binding]` attribute allows you to bind a concrete type in the container. The simplest use is by applying it to a class to bind the concrete class directly:
 
-    [Binding]
-    public class Foo { }
+```cs
+[Binding]
+public class Foo { }
+```
 
 It can also be used to bind an interface to the type:
 
-    [Binding(typeof(IUseful))]
-    public class Foo : IUseful { }
+```cs
+[Binding(typeof(IUseful))]
+public class Foo : IUseful { }
+```
 
 By default the lifetime is transient but can be configured:
 
-    [Binding(BindType.Singleton, typeof(IUseful))]
-    public class Foo : IUseful { }
-
+```cs
+[Binding(BindType.Singleton, typeof(IUseful))]
+public class Foo : IUseful { }
+```
 
 Methods can also be utilized to implement simple factory closures:
 
-    public class Foo : IUseful {
-        // fields and constructor omitted
+```cs
+public class Foo : IUseful {
+    // fields and constructor omitted
 
-        [Binding(typeof(IUseful))]
-        public static Foo FooFactory(IServiceProvider sp) {
-            var logger = sp.GetService<ILogger>()
-            return new Foo(logger, "Hello World);
-        }
+    [Binding(typeof(IUseful))]
+    public static Foo FooFactory(IServiceProvider sp) {
+        var logger = sp.GetService<ILogger>()
+        return new Foo(logger, "Hello World);
     }
+}
+```
 
 ### Shorthand Attributes
 
@@ -299,37 +319,40 @@ In addition to `[Binding]`, the `[AsSingleton]`, `[AsScoped]` and `[AsTransient]
 
 The `[Factory]` attribute allows you to bind a factory delegate in the container. The simplest use is by applying it to a static function which takes an `IServiceProvider` and returns the delegate:
 
-    public class Foo {
-        ILogger logger;
-        Stream stream;
+```cs
+public class Foo {
+    ILogger logger;
+    Stream stream;
 
-        public Foo(ILogger logger, Stream stream) {
-            this.logger = logger;
-            this.stream = stream;
-        }
-
-        [Factory]
-        public static Func<Stream, Foo> FooFactory(IServiceProvider sp) {
-            var logger = sp.GetService<ILogger>();
-            return stream => new Foo(logger, stream);
-        }
+    public Foo(ILogger logger, Stream stream) {
+        this.logger = logger;
+        this.stream = stream;
     }
 
+    [Factory]
+    public static Func<Stream, Foo> FooFactory(IServiceProvider sp) {
+        var logger = sp.GetService<ILogger>();
+        return stream => new Foo(logger, stream);
+    }
+}
+```
 
 Now dependants can depend on the delegate:
 
-    public class Bar {
-        Func<Stream, Foo> fooFactory;
+```cs
+public class Bar {
+    Func<Stream, Foo> fooFactory;
 
-        public Bar(Func<Stream, foo> fooFactory) {
-            this.fooFactory = fooFactory;
-        }
-
-        public FooizeFileStream(Stream stream) {
-            var foo = fooFactory(stream);
-            // ...
-        }
+    public Bar(Func<Stream, foo> fooFactory) {
+        this.fooFactory = fooFactory;
     }
+
+    public FooizeFileStream(Stream stream) {
+        var foo = fooFactory(stream);
+        // ...
+    }
+}
+```
 
 `Bar` receives a `Func<Stream, Foo>` factory delegate from the container, which it can use to pass `Stream` instances to get `Foo` instances. Each `Foo` instance will have its `ILogger` properly injected thanks to our factory implementation.
 
