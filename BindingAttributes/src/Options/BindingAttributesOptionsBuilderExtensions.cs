@@ -14,8 +14,6 @@ namespace BindingAttributes {
             this OptionsBuilder<TOptions> optionsBuilder)
             where TOptions : class {
             
-            Console.WriteLine($"Calling ValidateOptionsAnnotations: {typeof(TOptions)}");
-
             var optionsType = typeof(TOptions);
             var optionsAttrs = optionsType.GetCustomAttributes<OptionsAttribute>();
 
@@ -28,7 +26,6 @@ namespace BindingAttributes {
 
             optionsBuilder.Services.AddSingleton((IValidateOptions<TOptions>) instance);
 
-            Console.WriteLine($"Completed ValidateOptionsAnnotations");
             return optionsBuilder;
         }
 
