@@ -4,3 +4,8 @@ nuget Microsoft.Extensions.DependencyInjection >= 2.2.0
 nuget Microsoft.Extensions.Options >= 2.2.0
 nuget Microsoft.Extensions.Options.ConfigurationExtensions >= 2.2.0
 nuget Microsoft.Extensions.Options.DataAnnotations >= 2.2.0
+
+# test dependencies
+nuget Microsoft.NET.Test.sdk >= 16.0.1
+nuget xunit >= 2.4.0
+nuget xunit.runner.visualstudio >= 2.4.0
