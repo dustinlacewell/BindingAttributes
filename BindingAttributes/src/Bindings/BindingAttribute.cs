@@ -44,7 +44,6 @@ namespace BindingAttributes {
 
         public void BindWith(IServiceCollection services, Type serviceType, MethodInfo handler) {
             var closure = new Func<IServiceProvider, object>(s => s.InvokeWithServices(handler));
-
             services.Add(new ServiceDescriptor(serviceType, closure, _serviceLifetime));
         }
 
@@ -52,8 +51,8 @@ namespace BindingAttributes {
             Bind(services, _serviceType ?? implementationType, implementationType);
         }
 
-        public void ExecuteWith(IServiceCollection services, Type implementationType, MethodInfo handler) {
-            BindWith(services, _serviceType ?? implementationType, handler);
+        public void ExecuteWith(IServiceCollection services, MethodInfo handler) {
+            BindWith(services, _serviceType ?? handler.ReturnType, handler);
         }
 
         public static void ConfigureBindings(IServiceCollection services, IEnumerable<Assembly> assemblies = null) {
@@ -78,9 +77,10 @@ namespace BindingAttributes {
                         if (methodAttrs.Count() == 0) {
                             continue;
                         }
-
+                        
                         foreach (BindingAttribute attr in methodAttrs) {
-                            attr.ExecuteWith(services, implementationType, method);
+                            
+                            attr.ExecuteWith(services, method);
                         }
                     }
                 }

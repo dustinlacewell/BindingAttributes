@@ -1,19 +1,22 @@
+
 using System;
 using System.Linq;
 using System.Reflection;
 
 using Microsoft.Extensions.DependencyInjection;
 
-using Xunit;
+using Xunit.Abstractions;
 
+using Xunit;
+[assembly: CollectionBehavior(DisableTestParallelization = true)]
 
 namespace BindingAttributes.Tests {
 
-    public class BindingAttributeTests {
+    public class BindingAttributeTests : XunitLoggingBase {
 
         private readonly IServiceCollection _services;
 
-        public BindingAttributeTests() {
+        public BindingAttributeTests(ITestOutputHelper output) : base(output) {
             _services = new ServiceCollection();
             
             BindingAttribute.ConfigureBindings(_services, new[] {Assembly.GetExecutingAssembly()});
@@ -65,6 +68,14 @@ namespace BindingAttributes.Tests {
             Assert.Equal(serviceLifetime, serviceDescriptor.Lifetime);
         }
 
+        [Fact]
+        public void CanBindDelegates() {
+            var serviceDescriptor = FindBoundService(typeof(ServiceAFactory));
+            Assert.NotNull(serviceDescriptor);
+            Assert.Equal(ServiceLifetime.Singleton, serviceDescriptor.Lifetime);
+            Assert.Equal(typeof(ServiceAFactory), serviceDescriptor.ServiceType);
+        }
+
         private ServiceDescriptor FindBoundService(Type serviceType) {
             return _services.FirstOrDefault(serviceDescriptor => serviceDescriptor.ServiceType == serviceType);
 
@@ -107,5 +118,16 @@ namespace BindingAttributes.Tests {
     internal interface IServiceE { }
 
     internal interface IServiceF { }
+
+    internal delegate ServiceA ServiceAFactory();
+
+    internal static class ServiceADelegateFactory {
+
+        [Binding(ServiceLifetime.Singleton)]
+        public static ServiceAFactory ServiceAFactory(IServiceProvider sp) {
+            return () => new ServiceA();
+        }
+
+    }
 
 }
