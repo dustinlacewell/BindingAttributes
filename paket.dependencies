@@ -9,3 +9,4 @@ nuget Microsoft.Extensions.Options.DataAnnotations >= 2.2.0
 nuget Microsoft.NET.Test.sdk >= 16.0.1
 nuget xunit >= 2.4.0
 nuget xunit.runner.visualstudio >= 2.4.0
+nuget XunitLogger >= 3.0.4
