@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
+using BindingAttributes.Extensions;
+
 using Microsoft.Extensions.DependencyInjection;
 
 
@@ -46,10 +48,10 @@ namespace BindingAttributes {
         }
 
         private void Bind(IServiceCollection services, MethodInfo target) {
-            var openBinder = GetBinder();            
-            var closedBinder = openBinder.MakeGenericMethod(target.ReturnType);
-            var targetDelegate = Delegate.CreateDelegate(closedBinder.GetParameters()[1].ParameterType, target);
-            closedBinder.Invoke(null, new object[] {services, targetDelegate});
+            var closure = new Func<IServiceProvider, object>(s => s.InvokeWithServices(target));
+
+            services.Add(new ServiceDescriptor(target.ReturnType, closure, _serviceLifetime));
+
         }
 
         public static void ConfigureFactories(IServiceCollection services, IEnumerable<Assembly> assemblies=null) {
