@@ -74,7 +74,7 @@ namespace BindingAttributes {
 
                         var methodAttrs = method.GetCustomAttributes(typeof(BindingAttribute));
 
-                        if (methodAttrs.Count() == 0) {
+                        if (!methodAttrs.Any()) {
                             continue;
                         }
                         
