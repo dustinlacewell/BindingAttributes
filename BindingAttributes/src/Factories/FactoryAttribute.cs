@@ -16,7 +16,7 @@ namespace BindingAttributes {
         private static MethodInfo _asScoped;
         private static MethodInfo _asTransient;
 
-        private BindType _bindType;
+        private readonly ServiceLifetime _serviceLifetime;
 
         static FactoryAttribute() {
             _asSingleton = BinderFinder.Find(BinderMethod.Singleton);
@@ -25,19 +25,19 @@ namespace BindingAttributes {
         }
 
         public FactoryAttribute() {
-            _bindType = BindType.Transient;
+            _serviceLifetime = ServiceLifetime.Transient;
         }
 
-        public FactoryAttribute(BindType bindType) {
-            _bindType = bindType;
+        public FactoryAttribute(ServiceLifetime serviceLifetime) {
+            _serviceLifetime = serviceLifetime;
         }
 
         private MethodInfo GetBinder() {
-            switch (_bindType) {
-                case BindType.Scoped:
+            switch (_serviceLifetime) {
+                case ServiceLifetime.Scoped:
                     return _asScoped;
 
-                case BindType.Singleton:
+                case ServiceLifetime.Singleton:
                     return _asSingleton;
 
                 default:

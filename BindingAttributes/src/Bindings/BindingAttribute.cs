@@ -14,56 +14,56 @@ namespace BindingAttributes {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
     public class BindingAttribute : Attribute {
 
-        protected BindType _bindType;
+        protected ServiceLifetime _serviceLifetime;
         protected Type _serviceType;
 
-        public BindingAttribute(BindType bindType, Type serviceType) {
-            _bindType = bindType;
+        public BindingAttribute(ServiceLifetime serviceLifetime, Type serviceType) {
+            _serviceLifetime = serviceLifetime;
             _serviceType = serviceType;
         }
 
-        public BindingAttribute(BindType bindType) {
-            _bindType = bindType;
+        public BindingAttribute(ServiceLifetime serviceLifetime) {
+            _serviceLifetime = serviceLifetime;
         }
 
         public BindingAttribute(Type serviceType) {
-            _bindType = BindType.Transient;
+            _serviceLifetime = ServiceLifetime.Transient;
             _serviceType = serviceType;
         }
 
         public BindingAttribute() {
-            _bindType = BindType.Transient;
+            _serviceLifetime = ServiceLifetime.Transient;
         }
 
         public void Bind(IServiceCollection services, Type serviceType, Type implementationType) {
-            switch (_bindType) {
-                case BindType.Singleton:
+            switch (_serviceLifetime) {
+                case ServiceLifetime.Singleton:
                     services.AddSingleton(serviceType, implementationType);
                     break;
 
-                case BindType.Scoped:
+                case ServiceLifetime.Scoped:
                     services.AddScoped(serviceType, implementationType);
                     break;
 
-                case BindType.Transient:
+                case ServiceLifetime.Transient:
                     services.AddTransient(serviceType, implementationType);
                     break;
             }
         }
 
         public void BindWith(IServiceCollection services, Type serviceType, MethodInfo handler) {
-            var closure = new Func<IServiceProvider, object>(s => handler.Invoke(null, new[] {s}));
+            var closure = new Func<IServiceProvider, object>(s => { return handler.Invoke(null, new[] {s}); });
 
-            switch (_bindType) {
-                case BindType.Singleton:
+            switch (_serviceLifetime) {
+                case ServiceLifetime.Singleton:
                     services.AddSingleton(serviceType, closure);
                     break;
 
-                case BindType.Scoped:
+                case ServiceLifetime.Scoped:
                     services.AddScoped(serviceType, closure);
                     break;
 
-                case BindType.Transient:
+                case ServiceLifetime.Transient:
                     services.AddTransient(serviceType, closure);
                     break;
             }
