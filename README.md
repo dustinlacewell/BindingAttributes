@@ -25,25 +25,97 @@ Finally update your packages:
     paket install
 
 
-# Feature Activation
+# Quickstart
 
 For any of the attributes within this package to work, you must configure your `IServiceCollection` appropriately:
 
 ```cs
 BindingAttribute.ConfigureBindings(services);
-FactoryAttribute.ConfigureFactories(services);
 OptionsAttribute.ConfigureOptions(services, configuration);
 ```
 
+Use the `[Binding]` attribute on classes, to bind the class to itself.
+
+```cs
+[Binding]
+public class Foo {}
+```
+
+Pass an interface, to bind the class an implementation of the interface:
+
+```cs
+[Binding(typeof(IFoo))]
+public class Foo : IFoo {}
+```
+
+Pass a `ServiceLifetime`:
+
+```cs
+[Binding(ServiceLifetime.Transient)]
+public class Foo {}
+```
+
+Or use a specialized attribute:
+
+```cs
+[AsTransient]
+public class Foo {}
+```
+
+The binding attributes work on public static methods to create factories bound to the return type. Method parameters are injected automatically (must be bound in the provider):
+
+```cs
+public class Foo {
+  public ILogger _logger;
+  public Foo(ILogger logger) { _logger = logger; }
+  [AsTransient]
+  public static Foo FooFactory(IServiceProvider sp, ILogger logger) {
+      return new Foo(logger);
+  }
+}
+```
+
+You can bind factories to delegates as well:
+
+```cs
+public class Foo {
+    public ILogger _logger;
+    public int _bar;
+    public Foo(ILogger logger, int bar) { _logger = logger; _bar = bar; }
+    [Binding]
+    public static Func<int, Foo> FooFactory(IServiceProvider sp, ILogger logger) {
+        return bar => new Foo(logger, bar);
+    }
+}
+```
+
+Use the `[Options]` attribute to bind your class `T` as `IOptions<T>` to your `IConfigurationRoot`:
+
+```
+[Options]
+public class FooOptions { 
+    public string Bar { get; }
+}
+```
+
+Pass a configuration path to bind to a specific `IConfiguration` sub-section:
+
+```
+[Options("Misc:Foo")]
+public class FooOptions { 
+    public string Bar { get; }
+}
+```
 
 ## Attribute Overview
 
-### BindTypes
+### Service Lifetimes
 
-By default the binding scopes are Singleton. Specify a particular scope by passing a `BindType` enumeration:
+By default the binding lifetimes are Singleton. Specify a particular scope by passing a `ServiceLifetime` enumeration to `[Binding(service_lifetime)]`:
 
-- *BindType*.**Transient**
-- *BindType*.**Scoped** *BindType*.**Singleton**
+- *ServiceLifetime*.**Transient**
+- *ServiceLifetime*.**Scoped** 
+- *ServiceLifetime*.**Singleton**
 
 ### Class Attributes
 
@@ -55,13 +127,13 @@ Bind the annotated type to itself with singleton lifetime.
 
 Bind the annotated type to `serviceType` with singleton lifetime.
 
-**[Binding(** *BindType* bindType **)]**
+**[Binding(** *ServiceLifetime* lifetime **)]**
 
-Bind the annotated type to itself with `bindType` lifetime.
+Bind the annotated type to itself with `lifetime` lifetime.
 
-**[Binding(** *Type* serviceType, *BindType* bindType **)]**
+**[Binding(** *Type* serviceType, *ServiceLifetime* lifetime **)]**
 
-Bind the annotated type to `serviceType` with `bindType` lifetime.
+Bind the annotated type to `serviceType` with `lifetime` lifetime.
 
 **[AsTransient]**
 
@@ -105,33 +177,13 @@ Bind the annotated method as a factory closure to its return type with singleton
 
 Bind the annotated method as a factory closure to `serviceType` with singleton lifetime.
 
-**[Binding(** *BindType* bindType **)]**
+**[Binding(** *ServiceLifetime* lifetime **)]**
 
-Bind the annotated method as a factory closure to its return type with `bindType` lifetime.
+Bind the annotated method as a factory closure to its return type with `lifetime` lifetime.
 
-**[Binding(** *Type* serviceType, *BindType* bindType **)]**
+**[Binding(** *Type* serviceType, *BindType* lifetime **)]**
 
-Bind the annotated method as a factory closure to `serviceType` with `bindType` lifetime.
-
-**[Factory]**
-
-Bind the annotated method as a factory delegate to the delegate's return value with singleton lifetime.
-
-**[Factory(** *BindType* bindType **)]**
-
-Bind the annotated method as a factory delegate to the delegate's return value with `bindType` lifetime.
-
-**[TransientFactory]**
-
-Bind the annotated method, as a factory delegate, to the delegate's return value with transient lifetime.
-
-**[ScopedFactory]**
-
-Bind the annotated method, as a factory delegate, to the delegate's return value with scoped lifetime.
-
-**[SingletonFactory]**
-
-Bind the annotated method, as a factory delegate, to the delegate's return value with singleton lifetime.
+Bind the annotated method as a factory closure to `serviceType` with `lifetime` lifetime.
 
 # Bindings and Factories
 
@@ -141,7 +193,7 @@ If you're unsure about why you should care, the definitive resource is [Dependen
 
 The DI container described in this document is the one used in ASP.NET Core, but the concepts are the same for just about any modern container.
 
-Skip to the end to learn how to use our DI attributes, `[Binding]`, `[Factory]` and friends.
+Skip to the end to learn how to use our DI attributes, `[Binding]`, `[Options]` and friends.
 
 ## Dependency Injection
 
@@ -273,7 +325,7 @@ public class Bar {
 ```
 Now it doesn't need to interact with the container directly by calling `GetService` on it.
 
-## [Binding] Attribute
+## [Binding] to Types
 
 The `[Binding]` attribute allows you to bind a concrete type in the container. The simplest use is by applying it to a class to bind the concrete class directly:
 
@@ -296,11 +348,25 @@ By default the lifetime is transient but can be configured:
 public class Foo : IUseful { }
 ```
 
-Methods can also be utilized to implement simple factory closures:
+## [Binding] to Methods
+
+Methods can also be utilized to implement factories. By default, the factory will be bound to the method's return type:
+
+```cs
+public class Foo {
+
+    [Binding]
+    public static Foo FooFactory(IServiceProvider sp) {
+        var logger = sp.GetService<ILogger>()
+        return new Foo(logger, "Hello World);
+    }
+}
+```
+
+But binding to interfaces is also possible:
 
 ```cs
 public class Foo : IUseful {
-    // fields and constructor omitted
 
     [Binding(typeof(IUseful))]
     public static Foo FooFactory(IServiceProvider sp) {
@@ -310,10 +376,25 @@ public class Foo : IUseful {
 }
 ```
 
+### Auto-injected Factories
+
+Factory methods will automatically have their parameters injected:
+
+```cs
+public class Foo {
+
+    [Binding)]
+    public static Foo FooFactory(IServiceProvider sp, ILogger logger) {
+        return new Foo(logger, "Hello World);
+    }
+}
+```
+
+
+
 ### Shorthand Attributes
 
 In addition to `[Binding]`, the `[AsSingleton]`, `[AsScoped]` and `[AsTransient]` attributes all do the obvious thing.
-
 
 ## Using the [Factory] attribute
 
