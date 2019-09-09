@@ -30,12 +30,12 @@ namespace BindingAttributes {
         }
 
         public BindingAttribute(Type serviceType) {
-            _serviceLifetime = ServiceLifetime.Transient;
+            _serviceLifetime = ServiceLifetime.Singleton;
             _serviceType = serviceType;
         }
 
         public BindingAttribute() {
-            _serviceLifetime = ServiceLifetime.Transient;
+            _serviceLifetime = ServiceLifetime.Singleton;
         }
 
         public void Bind(IServiceCollection services, Type serviceType, Type implementationType) {
