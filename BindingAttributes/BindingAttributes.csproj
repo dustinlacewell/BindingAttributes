@@ -5,7 +5,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Authors>ldlework;scottbot95</Authors>
     <Description>Attributes for binding types in the Microsoft.Extensions.Dependency container</Description>
-    <PackageDescription>
     <PackageProjectUrl>https://github.com/dustinlacewell/BindingAttributes</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dustinlacewell/BindingAttributes.git</RepositoryUrl>
     <PackageTags>DependencyInjection Attributes</PackageTags>
