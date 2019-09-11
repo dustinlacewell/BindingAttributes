@@ -3,12 +3,13 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Authors>Dustin Lacewell</Authors>
+    <Authors>ldlework;scottbot95</Authors>
     <Description>Attributes for binding types in the Microsoft.Extensions.Dependency container</Description>
+    <PackageDescription>
     <PackageProjectUrl>https://github.com/dustinlacewell/BindingAttributes</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dustinlacewell/BindingAttributes.git</RepositoryUrl>
     <PackageTags>DependencyInjection Attributes</PackageTags>
-    <PackageVersion>0.1.0</PackageVersion>
+    <PackageVersion>0.1.1</PackageVersion>
     <Title>BindingAttributes</Title>
   </PropertyGroup>
   <Import Project="..\.paket\Paket.Restore.targets" />
