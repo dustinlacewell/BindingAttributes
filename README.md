@@ -6,9 +6,19 @@ A short guide: [Bindings and Factories](https://github.com/dustinlacewell/Bindin
 
 ## Installation
 
-There is no Nuget package available yet.
+### Installing from Nuget
 
-### Installing with Paket
+BindingAttributes is available on [Nuget](https://www.nuget.org/packages/BindingAttributes/).
+
+Install with the `dotnet` CLI:
+
+    dotnet add package BindingAttributes
+
+Install with Package-Manager:
+
+    Install-Package BindingAttributes
+
+### Installing from Git with Paket
 
 Add the following to your `paket.dependencies`:
 
@@ -30,9 +40,10 @@ Finally update your packages:
 For any of the attributes within this package to work, you must configure your `IServiceCollection` appropriately:
 
 ```cs
-BindingAttribute.ConfigureBindings(services);
-OptionsAttribute.ConfigureOptions(services, configuration);
+serviceCollection.AddBindings()
+                 .AddBindings(configurationRoot);
 ```
+Both extension methods take an optional `IEnumerable<Assembly> assemblies` parameter to specify what assemblies to search for attribute uses.
 
 Use the `[Binding]` attribute on classes, to bind the class to itself.
 
@@ -390,57 +401,9 @@ public class Foo {
 }
 ```
 
-
-
 ### Shorthand Attributes
 
 In addition to `[Binding]`, the `[AsSingleton]`, `[AsScoped]` and `[AsTransient]` attributes all do the obvious thing.
-
-## Using the [Factory] attribute
-
-The `[Factory]` attribute allows you to bind a factory delegate in the container. The simplest use is by applying it to a static function which takes an `IServiceProvider` and returns the delegate:
-
-```cs
-public class Foo {
-    ILogger logger;
-    Stream stream;
-
-    public Foo(ILogger logger, Stream stream) {
-        this.logger = logger;
-        this.stream = stream;
-    }
-
-    [Factory]
-    public static Func<Stream, Foo> FooFactory(IServiceProvider sp) {
-        var logger = sp.GetService<ILogger>();
-        return stream => new Foo(logger, stream);
-    }
-}
-```
-
-Now dependants can depend on the delegate:
-
-```cs
-public class Bar {
-    Func<Stream, Foo> fooFactory;
-
-    public Bar(Func<Stream, foo> fooFactory) {
-        this.fooFactory = fooFactory;
-    }
-
-    public FooizeFileStream(Stream stream) {
-        var foo = fooFactory(stream);
-        // ...
-    }
-}
-```
-
-`Bar` receives a `Func<Stream, Foo>` factory delegate from the container, which it can use to pass `Stream` instances to get `Foo` instances. Each `Foo` instance will have its `ILogger` properly injected thanks to our factory implementation.
-
-### Shorthand Attributes
-
-In addition to `[Factory]`, the `[SingletonFactory]`, `[ScopedFactory]` and `[TransientFactory]` attributes all do the obvious thing.
-
 
 # Options
 

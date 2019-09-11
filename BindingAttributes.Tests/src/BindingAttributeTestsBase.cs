@@ -2,6 +2,8 @@ using System;
 using System.Linq;
 using System.Reflection;
 
+using BindingAttributes.Extensions;
+
 using Microsoft.Extensions.DependencyInjection;
 
 using Xunit.Abstractions;
@@ -15,9 +17,8 @@ namespace BindingAttributes.Tests {
 
         public BindingAttributeTestsBase(ITestOutputHelper output) : base(output) {
             _services = new ServiceCollection()
-                .AddSingleton<IFakeDependency>(new FakeDependency());
-
-            BindingAttribute.ConfigureBindings(_services, new[] {Assembly.GetExecutingAssembly()});
+                .AddSingleton<IFakeDependency>(new FakeDependency())
+                .AddBindings(new [] {Assembly.GetExecutingAssembly()});
 
             _provider = _services.BuildServiceProvider();
 
